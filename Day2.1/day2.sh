@@ -3,7 +3,6 @@ opponent=0
 myscore=0
 roundscore=0
 totalscore=0
-counter=0
 for i in $(cat input.txt)
 do
 case $i in
