@@ -25,11 +25,11 @@ do
     fi
     (( j+=1 ))
 done
-j=1
 while read line;
 do
 count=1
 writes=1
+j=1
     while (( j <= ${#line} ))
     do
         char=$(expr substr "$line" $j 1)    
@@ -38,7 +38,6 @@ writes=1
             if [ $char != 0 ];
             then
                 echo "$char" >> tmp$writes.txt
-                echo "$writes $char $count"
             fi
             (( writes+=1 ))
         fi
@@ -46,4 +45,7 @@ writes=1
         (( j+=1 ))
     done
 done < tmpfile.txt
+
+
+
 rm tmp*.txt
