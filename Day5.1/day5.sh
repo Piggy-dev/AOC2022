@@ -1,19 +1,19 @@
 #!/bin/ksh
-filename=test.txt
+filename=input.txt
 touch rtmp.txt
 touch tmp.txt
 awk 'BEGIN { FS = OFS = "" } { for(i=1; i<=NF; i++) if($i ~ /^ *$/) $i = 0}; 1' $filename | tr "[]" "00" >> tmp.txt
 sed -e '/^$/,$d' tmp.txt >> rtmp.txt
 rm tmp.txt
 touch tmp.txt
-part2=$(sed -n '/\S/b;:a;n;//p;ba' $filename)
+touch tmppart2.txt
+sed -n '/\S/b;:a;n;//p;ba' $filename | tr -d "[[:alpha:]]" >> tmppart2.txt
 tac rtmp.txt > tmp.txt
 rm rtmp.txt
 part1=$(echo $(cat tmp.txt))
 part1first="$(cut -d' ' -f1 <<<"$part1")"
 touch tmpfile.txt
 echo ${part1#* } | tr " " "\n" >> tmpfile.txt
-echo "$part1second"
 j=1
 while (( j <= ${#part1first} ))
 do
@@ -46,6 +46,41 @@ j=1
     done
 done < tmpfile.txt
 
+while read line;
+do
+    count=0
+    for i in $line;
+    do
+        if [[ $count == 0 ]];
+        then
+            move=$i
+        fi
+        if [[ $count == 1 ]];
+        then
+            from=$i
+        fi
+        if [[ $count == 2 ]];
+        then
+            to=$i
+        fi
+        (( count+=1 ))
+    done
 
+    while (( move > 0 ));
+    do
+        tmpmove=$( tail -n 1 tmp$from.txt )
+        echo "$tmpmove" >> tmp$to.txt
+        sed -i '$d' tmp$from.txt
+        (( move-=1))
+    done
+
+done < tmppart2.txt
+tmpfi=1
+#echo "$writes"
+while (( tmpfi < writes ));
+do
+    echo "$tmpfi: $(tail -n 1 tmp$tmpfi.txt)"
+    (( tmpfi+=1 ))
+done
 
 rm tmp*.txt
